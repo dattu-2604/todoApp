@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .card {
+        width: 300px;
+        margin: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better appearance */
+        border-radius: 8px; /* Optional: add border radius for rounded corners */
+        background-color: #fff; /* Optional: set background color of card */
+      }
+      .card-body {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('header') %>
+    <div class="card">
+      <div class="card-header">
+        <center>
+          <h2>Signup</h2>
+        </center>
+      </div>
+      <div class="card-body">
+        <form action="/signup" method="post">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+            />
+          </div>
+          <center>
+            <button type="submit" class="btn btn-primary">Signup</button>
+          </center>
+        </form>
+      </div>
+    </div>
+    <%- include('footer') %>
+  </body>
+</html>
