@@ -14,7 +14,7 @@ app.use(
   session({
     secret: "FA8BF62B9F47A6F33A5E2DB8851F8",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   })
 );
 
@@ -25,6 +25,25 @@ app.use((req, res, next) => {
   res.locals.error_msg = req.flash("error_msg");
   next();
 });
+
+function preventCaching(req, res, next) {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.setHeader("Expires", "0");
+  res.setHeader("Pragma", "no-cache");
+  next();
+}
+
+function ensureAuthenticated(req, res, next) {
+  if (req.session.user) {
+    return next(); // User is authenticated, proceed
+  }
+  res.redirect("/login"); // Redirect to login page if not authenticated
+}
+
+// app.use(preventCaching);
 
 // Create a MySQL connection
 const connection = mysql.createConnection({
@@ -43,8 +62,56 @@ connection.connect((err) => {
   console.log("Connected to the database as ID " + connection.threadId);
 });
 
-app.get("/", (req, res) => {
+app.get("/", preventCaching, ensureAuthenticated, (req, res) => {
+  res.render("home", { user: req.session.user });
+});
+
+app.get("/login", preventCaching, (req, res) => {
+  if (req.session.user) {
+    return res.redirect("/");
+  }
+
   res.render("login");
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  const getUser = "SELECT * FROM users WHERE email = ?";
+
+  connection.query(getUser, [email], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      req.flash("error_msg", "An error occurred. Please try again.");
+      return res.redirect("/login");
+    }
+
+    // If user not found
+    if (results.length === 0) {
+      req.flash("error_msg", "Invalid email");
+      return res.redirect("/login");
+    }
+
+    // user found
+    const user = results[0];
+    const isPasswordValid = user.password == password;
+
+    if (!isPasswordValid) {
+      req.flash("error_msg", "Invalid password.");
+      return res.redirect("/login");
+    }
+
+    //login success
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    req.flash("success_msg", "Login successful!");
+    res.redirect("/");
+  });
 });
 
 app.get("/signup", (req, res) => {
@@ -95,7 +162,21 @@ app.post("/signup", (req, res) => {
   });
 });
 
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      req.flash(
+        "error_msg",
+        "An error occurred during logout. Please try again."
+      );
+      return res.redirect("/");
+    }
+
+    res.redirect("/login");
+  });
+});
+
 // Start the server
 app.listen(port, () => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port " + port);
 });
