@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(
   session({
-    secret: "erlgherg", // Change this to a secret key for your app
+    secret: "FA8BF62B9F47A6F33A5E2DB8851F8",
     resave: false,
     saveUninitialized: true,
   })
