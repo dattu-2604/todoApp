@@ -4,12 +4,136 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+    <style>
+      .calendar-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+      }
+      #calendar {
+        flex: 2;
+        padding: 15px;
+      }
+      #task-panel {
+        flex: 1;
+        border-left: 1px solid #dee2e6;
+        padding: 15px;
+      }
+      .container-fluid {
+        padding: 0;
+      }
+      .task-table th,
+      .task-table td {
+        vertical-align: middle;
+        text-align: center;
+      }
+      .task-table .actions {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+      }
+    </style>
   </head>
   <body>
-    <%- include('header') %>
-    <h1>Welcome, <%= user.name %>!</h1>
-    <br />
-    <a href="/logout" class="btn btn-danger">Logout</a>
-    <%- include('footer') %>
+    <div class="bg-light p-3">
+      <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Welcome, <%= user.name %>!</h1>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid calendar-container">
+      <div id="calendar">
+        <div
+          id="calendar-header"
+          class="d-flex justify-content-between align-items-center mb-3"
+        >
+          <button onclick="prevMonth()" class="btn btn-primary">
+            &#10094;
+          </button>
+          <h2 id="month-year"></h2>
+          <button onclick="nextMonth()" class="btn btn-primary">
+            &#10095;
+          </button>
+        </div>
+        <div id="calendar-days" class="text-center">
+          <div id="days-of-week" class="row">
+            <!-- Day headers will be generated here -->
+          </div>
+          <!-- Days will be generated here -->
+        </div>
+      </div>
+
+      <div id="task-panel">
+        <div class="container mt-4">
+          <h3 id="form-title">Add Task</h3>
+          <form id="task-form" class="form-inline" method="post">
+            <div class="form-group mx-sm-3 mb-2">
+              <input
+                type="date"
+                id="task-date"
+                class="form-control"
+                placeholder="Date"
+                required
+              />
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <input
+                type="text"
+                id="task-desc"
+                class="form-control"
+                placeholder="Description"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              id="form-submit-btn"
+              class="btn btn-primary mb-2"
+            >
+              Add Task
+            </button>
+          </form>
+        </div>
+
+        <div id="tasks" class="container mt-4">
+          <!-- Tasks will be displayed here in a table format -->
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="scripts/script.js"></script>
+    <% if (success_msg != '') { %>
+    <script>
+      Toastify({
+        text: "<%= success_msg %>",
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+        duration: 3000,
+      }).showToast();
+    </script>
+    <% } %> <% if (error_msg != '') { %>
+    <script>
+      Toastify({
+        text: "<%= error_msg %>",
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+        duration: 3000,
+      }).showToast();
+    </script>
+    <% } %>
   </body>
 </html>

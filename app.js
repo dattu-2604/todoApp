@@ -8,6 +8,7 @@ const port = 7777;
 
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(
@@ -102,7 +103,7 @@ app.post("/login", (req, res) => {
       return res.redirect("/login");
     }
 
-    //login success
+    // login success
     req.session.user = {
       id: user.id,
       name: user.name,
@@ -110,7 +111,7 @@ app.post("/login", (req, res) => {
     };
 
     req.flash("success_msg", "Login successful!");
-    res.redirect("/");
+    res.redirect("/"); // Redirect to home or another page
   });
 });
 
@@ -173,6 +174,79 @@ app.get("/logout", (req, res) => {
     }
 
     res.redirect("/login");
+  });
+});
+
+app.get("/api/tasks", (req, res) => {
+  const date = req.query.date;
+  const query = "SELECT * FROM tasks WHERE date = ? and user_id = ?";
+  connection.query(query, [date, req.session.user.id], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(results);
+  });
+});
+
+app.post("/api/tasks", (req, res) => {
+  const { date, description } = req.body;
+  if (!date || !description) {
+    return res.status(400).json({ error: "Date and description are required" });
+  }
+
+  const query =
+    "INSERT INTO tasks (user_id ,date, description) VALUES (?,?, ?)";
+  connection.query(
+    query,
+    [req.session.user.id, date, description],
+    (err, results) => {
+      if (err) {
+        console.error("Error inserting task:", err);
+        return res.status(500).json({ error: err.message });
+      }
+      req.flash("success_msg", "Task added successfully!");
+      res.status(201).json({ id: results.insertId });
+    }
+  );
+});
+
+// Update a task
+app.put("/api/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  const { date, description } = req.body;
+
+  if (!date || !description) {
+    return res.status(400).json({ error: "Date and description are required" });
+  }
+
+  const query =
+    "UPDATE tasks SET date = ?, description = ? WHERE id = ? AND user_id = ?";
+  connection.query(
+    query,
+    [date, description, id, req.session.user.id],
+    (err) => {
+      if (err) {
+        console.error("Error updating task:", err);
+        return res.status(500).json({ error: err.message });
+      }
+      req.flash("success_msg", "Task updated successfully!");
+      res.status(200).json({ message: "Task updated successfully" });
+    }
+  );
+});
+
+// Delete a task
+app.delete("/api/tasks/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = "DELETE FROM tasks WHERE id = ? AND user_id = ?";
+  connection.query(query, [id, req.session.user.id], (err) => {
+    if (err) {
+      console.error("Error deleting task:", err);
+      return res.status(500).json({ error: err.message });
+    }
+    req.flash("error_msg", "Task deleted successfully!");
+    res.status(200).json({ message: "Task deleted successfully" });
   });
 });
 

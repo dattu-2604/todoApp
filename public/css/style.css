@@ -80,3 +80,88 @@
 .form button:hover {
   background-color: #005ce6;
 }
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+#calendar {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+#calendar-days div {
+  padding: 15px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+
+#calendar-days div:hover {
+  background-color: #e9ecef;
+}
+
+#days-of-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+#days-of-week div {
+  padding: 10px;
+  font-weight: bold;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+}
+
+#calendar-header {
+  background: #e9ecef;
+  padding: 10px;
+}
+
+.modal-dialog {
+  max-width: 400px;
+}
+
+#task-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border: 1px solid #ddd;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#tasks {
+  margin-top: 20px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.task-item span {
+  flex: 1;
+}
+
+.btn {
+  margin-left: 8px;
+}
